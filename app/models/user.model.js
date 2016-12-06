@@ -1,18 +1,20 @@
 import Sequelize from 'sequelize';
 import bcrypt from 'bcrypt';
-import config from './../../config/config';
+const dotenv = require('dotenv').config();
 
 
 function hashedPassword(plainTextPassword) {
   if (!plainTextPassword) return '';
   return bcrypt.hashSync(plainTextPassword, 10);
 }
-
-const sequelize = new Sequelize(config.database, config.dbUsename, config.dbPassword);
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
+  host: '127.0.0.1',
+  dialect: 'postgres',
+  port: 5432,
+});
 const User = sequelize.define('User', {
-  firstname: {
+  firstName: {
     type: Sequelize.STRING,
-    allowNull: false,
     validate: {
       notEmpty: true,
     },
@@ -24,12 +26,18 @@ const User = sequelize.define('User', {
       notEmpty: true,
     },
   },
+  email: {
+    type: Sequelize.STRING,
+    unique: true,
+    allowNull: false,
+  },
   username: {
     type: Sequelize.STRING,
     allowNull: false,
     validate: {
       notEmpty: true,
     },
+    unique: true,
   },
   password: {
     type: Sequelize.STRING,
@@ -39,10 +47,11 @@ const User = sequelize.define('User', {
     },
   },
   role: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.STRING,
     allowNull: false,
-    defaultValue: 2,
   },
 });
+
+sequelize.sync();
 
 export default User;

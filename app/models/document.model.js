@@ -4,6 +4,13 @@ import Role from './role.model';
 import User from './user.model';
 
 const sequelize = new Sequelize(config.database, config.dbUsename, config.dbPassword);
+sequelize.authenticate().complete((err) => {
+  if (err) {
+    console.log('Error connecting');
+  } else {
+    console.log('Connection has been established successfully');
+  }
+});
 
 const Document = sequelize.define('Document', {
   id: {
@@ -15,6 +22,9 @@ const Document = sequelize.define('Document', {
     type: Sequelize.STRING,
     allowNull: false,
     unique: true,
+  },
+  content: {
+    type: Sequelize.TEXT,
   },
   owner: {
     type: Sequelize.STRING,
