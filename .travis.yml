@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - "6.7"
+services:
+  - postgresql
+before_script:
+  - psql -c 'create database document_manager;' -U postgres
+script:
+  - npm run clean
+  - npm run init
+  - npm run seed
+  - npm run coverage
+after_success:
+  - npm run coveralls
