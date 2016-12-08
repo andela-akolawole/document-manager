@@ -47,12 +47,10 @@
     "jasmine-spec-reporter": "^2.7.0",
     "mocha": "^3.2.0",
     "nodemon": "^1.11.0",
-    "sequelize-cli": "^2.4.0",
     "should": "^11.1.1",
     "supertest": "^2.0.1"
   },
   "dependencies": {
-    "bcrypt": "^1.0.0",
     "body-parser": "^1.15.2",
     "chai": "^3.5.0",
     "cookie-session": "^1.2.0",
@@ -63,6 +61,7 @@
     "morgan": "^1.7.0",
     "mysql": "^2.11.1",
     "pg": "^6.1.0",
+    "sequelize-cli": "^2.4.0",
     "pg-hstore": "^2.3.2",
     "request": "^2.76.0",
     "sequelize": "^3.24.5",

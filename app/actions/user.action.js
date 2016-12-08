@@ -1,10 +1,11 @@
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto-js';
 import bcrypt from 'bcrypt';
 import User from '../models/user.model';
 
-function verifyPassword(plainTextPassword, hashedPassword) {
-  if (!plainTextPassword || !hashedPassword) return false;
-  return bcrypt.compareSync(plainTextPassword, hashedPassword);
+function verifyPassword(hashedPassword) {
+  if (!hashedPassword) return false;
+  return crypto.AES.decrypt(hashedPassword, process.env.SECRET).toString(crypto.enc.Utf8);
 }
 
 /**
@@ -82,7 +83,7 @@ export function LOGIN(req, res) {
      })
      .then((user) => {
        if (user) {
-         if (!verifyPassword(body.password, user.password)) {
+         if (body.password !== verifyPassword(user.password)) {
            return res.status(403).json({
              status: 403,
              message: 'Authenication failed. Username or password! is incorrect',

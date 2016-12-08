@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import crypto from 'crypto-js';
 import bcrypt from 'bcrypt';
 
 const dotenv = require('dotenv').config();
@@ -6,7 +7,7 @@ const dotenv = require('dotenv').config();
 
 function hashedPassword(plainTextPassword) {
   if (!plainTextPassword) return '';
-  return bcrypt.hashSync(plainTextPassword, 10);
+  return crypto.AES.encrypt(plainTextPassword, process.env.SECRET).toString();
 }
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
   host: '127.0.0.1',
