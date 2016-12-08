@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto-js';
-import bcrypt from 'bcrypt';
 import User from '../models/user.model';
 
 function verifyPassword(hashedPassword) {
