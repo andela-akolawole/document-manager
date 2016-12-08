@@ -1,13 +1,12 @@
 language: node_js
 node_js:
-  - "6.7"
+  - "4.2.6"
 services:
   - postgresql
 before_script:
   - npm install
   - psql -c 'create database document_manager;' -U postgres
 script:
-  - npm run clean
   - npm run init
   - npm run coverage
 after_success:
