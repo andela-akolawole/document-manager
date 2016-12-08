@@ -1,6 +1,5 @@
 import Sequelize from 'sequelize';
 import crypto from 'crypto-js';
-import bcrypt from 'bcrypt';
 
 const dotenv = require('dotenv').config();
 
