@@ -17,7 +17,7 @@ routes(router);
 app.use('/api', router);
 
 app.use((req, res, next) => {
-  res.status(501).json({
+  res.status(404).json({
     status: 404,
     message: 'Not found!!!!!!',
   });

@@ -28,7 +28,30 @@ const userSeed = [
     "username": "tbundy",
     "password": "password3",
     "email": "user3@example.com",
-  }
+  },
+  {
+    // login data
+    "username": "amcdonald",
+    "password": "password1",
+  },
+  {
+    // wrong password
+    "username": "amcdonald",
+    "password": "password5",
+  },
+  {
+    //wrong username
+    "username": "skdfjdl",
+    "password": "password",
+  },
+  {
+    "username": "pescobar",
+    "password": "password2",
+    "email": "user2@example.com",
+    "role": "user",
+    "firstName": "Pablo",
+    "lastName": "Escobar"
+  },
 ];
 
 export default userSeed;

@@ -1,11 +1,11 @@
 import Sequelize from 'sequelize';
 import crypto from 'crypto-js';
+import Role from './role.model';
 
 const dotenv = require('dotenv').config();
 
 
 function hashedPassword(plainTextPassword) {
-  if (!plainTextPassword) return '';
   return crypto.AES.encrypt(plainTextPassword, process.env.SECRET).toString();
 }
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
@@ -51,6 +51,11 @@ const User = sequelize.define('User', {
   role: {
     type: Sequelize.STRING,
     allowNull: false,
+    references: {
+      model: Role,
+      key: 'title',
+      deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED,
+    },
   },
 });
 
