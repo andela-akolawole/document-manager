@@ -9,7 +9,7 @@
     "seed": "node_modules/.bin/sequelize db:seed:all",
     "start": "nodemon app.js --exec babel-node --presets es2015,stage-2",
     "coverage": "rm -rf /coverage && node_modules/.bin/babel-node node_modules/.bin/babel-istanbul cover node_modules/.bin/_mocha --reporter tests/server",
-    "coveralls": "cat ./coverage/**/*.info | ./node_modules/coveralls/bin/coveralls.js"
+    "coveralls": "cat ./coverage/*.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
     "type": "git",
