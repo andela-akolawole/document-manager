@@ -7,14 +7,14 @@ module.exports = {
       username: 'kolafas',
       password: 'password',
       email: 'kolawole.alade@andela.com',
-      role: '2',
+      role: 'admin',
     }, {
       firstName: 'Femi',
       lastName: 'Alade',
       username: 'kolafas2',
       password: 'password',
       email: 'kolawole.alade@andela.com',
-      role: '2',
+      role: 'user',
     }], {});
   },
 

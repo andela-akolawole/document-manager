@@ -3,7 +3,6 @@ import crypto from 'crypto-js';
 import User from '../models/user.model';
 
 function verifyPassword(hashedPassword) {
-  if (!hashedPassword) return false;
   return crypto.AES.decrypt(hashedPassword, process.env.SECRET).toString(crypto.enc.Utf8);
 }
 
@@ -23,14 +22,15 @@ export function CREATE(req, res) {
           username: body.username,
         },
       })
-      .then((document) => {
-        if (!document) {
+      .then((users) => {
+        if (!users) {
           User
             .create(body)
             .then((user) => {
               const token = jwt.sign({
                 username: user.dataValues.username,
                 role: user.dataValues.role,
+                id: user.dataValues.id,
               },
               process.env.SECRET);
 
@@ -39,14 +39,6 @@ export function CREATE(req, res) {
                 message: 'Successfully registration',
                 token,
               });
-            })
-            .catch((err) => {
-              if (err) {
-                return res.json({
-                  status: 500,
-                  message: 'Unsuccessfull registration',
-                });
-              }
             });
         } else {
           return res.status(409).json({
@@ -88,7 +80,11 @@ export function LOGIN(req, res) {
              message: 'Authenication failed. Username or password! is incorrect',
            });
          }
-         const token = jwt.sign(user.username, process.env.SECRET);
+         const token = jwt.sign({
+           username: user.dataValues.username,
+           role: user.dataValues.role,
+           id: user.dataValues.id,
+         }, process.env.SECRET);
          return res.status(200).json({
            status: 200,
            message: 'Successfully logged In',
@@ -110,7 +106,7 @@ export function LOGIN(req, res) {
 
 /**
  * GET_ALL
- * @summary This return all registered users
+ * @summary This returns all registered users
  * @param {object} req
  * @param {object} res
  * @return {object}
@@ -119,4 +115,108 @@ export function GET_ALL(req, res) {
   User
     .findAll()
     .then(users => res.status(200).json(users));
+}
+
+/**
+ * FIND
+ * @summary This returns all user
+ * @param {object} req
+ * @param {object} res
+ * @return {object}
+ */
+export function FIND(req, res) {
+  User
+    .findOne({
+      where: {
+        id: req.params.id,
+      },
+    })
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({
+          status: 404,
+          message: 'User not found.',
+        });
+      }
+      return res.status(200).json(user);
+    });
+}
+
+/**
+ * UPDATE
+ * @summary This update a user details
+ * @param {object} req
+ * @param {object} res
+ * @return {object}
+ */
+export function UPDATE(req, res) {
+  const body = req.body;
+  if (req.params.id !== req.decoded.id && req.decoded.role !== 'admin') {
+    return res.status(401).json({
+      status: 401,
+      message: 'You can only access your account',
+    });
+  }
+  User
+  .findOne({
+    where: {
+      id: req.params.id,
+    },
+  })
+  .then((user) => {
+    if (!user) {
+      return res.status(400).json({
+        status: 400,
+        message: 'User not found.',
+      });
+    }
+    user
+      .update(body, {
+        where: {
+          id: req.param.id,
+        },
+      })
+      .then(() => {
+        return res.status(200).json({
+          status: 200,
+          message: 'Successfully Updated',
+        });
+      });
+  });
+}
+
+/**
+ * DELETE
+ * @summary This deletes a user
+ * @param {object} req
+ * @param {object} res
+ * @return {object}
+ */
+export function DELETE(req, res) {
+  User
+  .findOne({
+    where: {
+      id: req.params.id,
+    },
+  })
+  .then((user) => {
+    if (!user) {
+      return res.status(400).json({
+        status: 400,
+        message: 'User not found.',
+      });
+    }
+    user
+      .destroy({
+        where: {
+          id: req.params.id,
+        },
+      })
+      .then(() => {
+        return res.status(200).json({
+          status: 200,
+          message: 'Successfully Deleted.',
+        });
+      });
+  });
 }
