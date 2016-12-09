@@ -1,0 +1,21 @@
+language: node_js
+node_js:
+  - "4.2.6"
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-4.8
+    - g++-4.8
+services:
+  - postgresql
+before_script:
+  - npm install
+  - psql -c 'create database document_manager;' -U postgres
+script:
+  - npm run inits
+  - npm run test
+  - npm run coverage
+after_success:
+  - npm run coveralls

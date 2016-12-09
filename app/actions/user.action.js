@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import crypto from 'crypto-js';
 import User from '../models/user.model';
 
-function verifyPassword(plainTextPassword, hashedPassword) {
-  if (!plainTextPassword || !hashedPassword) return false;
-  return bcrypt.compareSync(plainTextPassword, hashedPassword);
+function verifyPassword(hashedPassword) {
+  if (!hashedPassword) return false;
+  return crypto.AES.decrypt(hashedPassword, process.env.SECRET).toString(crypto.enc.Utf8);
 }
 
 /**
@@ -16,7 +16,7 @@ function verifyPassword(plainTextPassword, hashedPassword) {
  */
 export function CREATE(req, res) {
   const body = req.body;
-  if (body.firstName && body.lastName && body.username && body.email && body.password) {
+  if (body.firstName && body.role && body.lastName && body.username && body.email && body.password) {
     User
       .findOne({
         where: {
@@ -28,7 +28,12 @@ export function CREATE(req, res) {
           User
             .create(body)
             .then((user) => {
-              const token = jwt.sign(user.dataValues.username, process.env.SECRET);
+              const token = jwt.sign({
+                username: user.dataValues.username,
+                role: user.dataValues.role,
+              },
+              process.env.SECRET);
+
               return res.status(201).json({
                 status: 201,
                 message: 'Successfully registration',
@@ -46,7 +51,7 @@ export function CREATE(req, res) {
         } else {
           return res.status(409).json({
             status: 409,
-            message: 'This user already exists',
+            message: 'This user already exists.',
           });
         }
       });
@@ -77,7 +82,7 @@ export function LOGIN(req, res) {
      })
      .then((user) => {
        if (user) {
-         if (!verifyPassword(body.password, user.password)) {
+         if (body.password !== verifyPassword(user.password)) {
            return res.status(403).json({
              status: 403,
              message: 'Authenication failed. Username or password! is incorrect',
@@ -101,4 +106,17 @@ export function LOGIN(req, res) {
       message: 'Fill in the required fields',
     });
   }
+}
+
+/**
+ * GET_ALL
+ * @summary This return all registered users
+ * @param {object} req
+ * @param {object} res
+ * @return {object}
+ */
+export function GET_ALL(req, res) {
+  User
+    .findAll()
+    .then(users => res.status(200).json(users));
 }

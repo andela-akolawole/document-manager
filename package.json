@@ -4,8 +4,12 @@
   "description": "An app that manages documents based on user access/roles",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js --exec babel-node --presets es2015,stage-2"
+    "test": "mocha --compilers js:babel-core/register tests/server && npm run coverage",
+    "inits": "node_modules/.bin/sequelize db:migrate && npm run seed",
+    "seed": "node_modules/.bin/sequelize db:seed:all",
+    "start": "nodemon app.js --exec babel-node --presets es2015,stage-2",
+    "coverage": "rm -rf /coverage && node_modules/.bin/babel-node node_modules/.bin/babel-istanbul cover node_modules/.bin/_mocha --reporter tests/server",
+    "coveralls": "cat ./coverage/*.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
     "type": "git",
@@ -31,7 +35,7 @@
     "babel-preset-latest": "^6.16.0",
     "babel-preset-stage-2": "^6.18.0",
     "babel-register": "^6.18.0",
-    "coveralls": "^2.11.14",
+    "coveralls": "^2.11.15",
     "dotenv": "^2.0.0",
     "eslint": "^3.11.1",
     "eslint-config-airbnb": "^13.0.0",
@@ -41,11 +45,12 @@
     "istanbul": "^0.4.5",
     "jasmine": "^2.5.2",
     "jasmine-spec-reporter": "^2.7.0",
-    "mocha": "^3.1.2",
-    "nodemon": "^1.11.0"
+    "mocha": "^3.2.0",
+    "nodemon": "^1.11.0",
+    "should": "^11.1.1",
+    "supertest": "^2.0.1"
   },
   "dependencies": {
-    "bcrypt": "^1.0.0",
     "body-parser": "^1.15.2",
     "chai": "^3.5.0",
     "cookie-session": "^1.2.0",
@@ -56,6 +61,7 @@
     "morgan": "^1.7.0",
     "mysql": "^2.11.1",
     "pg": "^6.1.0",
+    "sequelize-cli": "^2.4.0",
     "pg-hstore": "^2.3.2",
     "request": "^2.76.0",
     "sequelize": "^3.24.5",
