@@ -1,6 +1,6 @@
 const roleSeed = [
     {
-        roleTitle: 'guest',
+        roleTitle: 'documentarian',
     },
 ];
 

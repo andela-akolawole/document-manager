@@ -11,7 +11,7 @@ const userSeed = [
     "username": "pescobar",
     "password": "password2",
     "email": "user2@example.com",
-    "role": "user",
+    "role": "regular",
     "firstName": "Pablo",
     "lastName": "Escobar"
   },
@@ -48,7 +48,7 @@ const userSeed = [
     "username": "pescobar",
     "password": "password2",
     "email": "user2@example.com",
-    "role": "user",
+    "role": "regular",
     "firstName": "Pablo",
     "lastName": "Escobar"
   },
