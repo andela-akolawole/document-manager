@@ -37,7 +37,7 @@ export function CREATE(req, res) {
 
               return res.status(201).json({
                 status: 201,
-                message: 'Successfully registration',
+                message: 'Successfully registered',
                 token,
               });
             });

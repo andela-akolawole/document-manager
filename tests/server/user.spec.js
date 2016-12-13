@@ -40,7 +40,7 @@ describe('User', () => {
         .expect(201)
         .end((err, res) => {
             res.status.should.equal(201);
-            res.body.message.should.equal('Successfully registration');
+            res.body.message.should.equal('Successfully registered');
             done();
         });
   });
