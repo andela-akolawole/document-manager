@@ -6,8 +6,9 @@ import app from '../../app';
 
 const server = supertest(app);
 const secret = process.env.SECRET;
-const adminToken = jwt.sign({ username: userSeed[0].username, role: userSeed[0].role, id:'1' }, secret);
-const userToken = jwt.sign({ username: userSeed[1].username, role: userSeed[1].role, id: '2' }, secret);
+const adminToken = jwt.sign({ username: userSeed[0].username, role: userSeed[0].role, id: 1 }, secret);
+const userToken = jwt.sign({ username: userSeed[1].username, role: userSeed[1].role, id: 2 }, secret);
+const diffToken = jwt.sign({ username: userSeed[4].username, role: userSeed[1].role, id: 3 }, secret);
 
 before((done) => {
     server
@@ -38,7 +39,6 @@ describe('User', () => {
         .send(userSeed[7])
         .expect(201)
         .end((err, res) => {
-            console.log(res.body);
             res.status.should.equal(201);
             res.body.message.should.equal('Successfully registration');
             done();
@@ -152,10 +152,10 @@ describe('User', () => {
         })
   });
 
-  it('should return err if not admin', (done) => {
+  it('should return err if not user', (done) => {
       server
-        .put('/api/users/3')
-        .set('authorization', userToken)
+        .put('/api/users/2')
+        .set('authorization', adminToken)
         .expect(401)
         .end((err, res) => {
             res.status.should.equal(401);
@@ -168,34 +168,33 @@ describe('User', () => {
       server
         .put('/api/users/3')
         .set('authorization', adminToken)
-        .expect(400)
+        .expect(404)
         .end((err, res) => {
-            res.status.should.equal(400);
+            res.status.should.equal(404);
             res.body.message.should.equal('User not found.');
+            done();
+        })
+  });
+
+  it('should return success if user attributes is updated', (done) => {
+      server
+        .put('/api/users/2')
+        .set('authorization', userToken)
+        .send({ "firstName": 'John'})
+        .expect(200)
+        .end((err, res) => {
+            res.body.message.should.equal('Successfully Updated');
             done();
         })
   });
 
   it('should return err if user not found', (done) => {
       server
-        .put('/api/users/1')
-        .set('authorization', adminToken)
-        .send({ "username": 'me'})
-        .expect(200)
-        .end((err, res) => {
-            console.log(res.body);
-            res.body.message.should.equal('Successfully Updated');
-            done();
-        })
-  });
-
-  it('should return err if user not found delete', (done) => {
-      server
         .delete('/api/users/5')
         .set('authorization', adminToken)
-        .expect(400)
+        .expect(404)
         .end((err, res) => {
-            res.status.should.equal(400);
+            res.status.should.equal(404);
             res.body.message.should.equal('User not found.');
             done();
         })
@@ -210,6 +209,54 @@ describe('User', () => {
             res.status.should.equal(200);
             res.body.message.should.equal('Successfully Deleted.');
             done();
-        })
+        });
   });
+
+  it('should return all documents that belongs to the user', (done) => {
+      server
+        .get('/api/users/2/documents')
+        .set('authorization', userToken)
+        .expect(200)
+        .end((err, res) => {
+            res.status.should.equal(200);
+            res.body.length.should.be.above(1);
+            done();
+        });
+  });
+
+  it('should return err if correct user id is not found for user docs', (done) => {
+      server
+        .get('/api/users/10/documents')
+        .set('authorization', userToken)
+        .expect(404)
+        .end((err, res) => {
+            res.status.should.equal(404);
+            res.body.message.should.equal('User not found');
+            done();
+        });
+  });
+
+  it('should return all documents for the user if admin', (done) => {
+      server
+        .get('/api/users/2/documents')
+        .set('authorization', adminToken)
+        .expect(404)
+        .end((err, res) => {
+            res.status.should.equal(200);
+            res.body.length.should.be.above(1);
+            done();
+        });
+  });
+
+  it('should return all documents if regular user queries for documents', (done) => {
+      server
+        .get('/api/users/2/documents')
+        .set('authorization', diffToken)
+        .expect(404)
+        .end((err, res) => {
+            res.status.should.equal(200);
+            res.body.length.should.be.above(0);
+            done();
+        });
+  })
 })

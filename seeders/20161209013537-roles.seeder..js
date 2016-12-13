@@ -3,7 +3,7 @@ module.exports = {
     return queryInterface.bulkInsert('Roles', [{
       roleTitle: 'admin',
     }, {
-      roleTitle: 'user',
+      roleTitle: 'regular',
     }], {});
   },
 

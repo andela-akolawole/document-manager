@@ -22,7 +22,7 @@ export function authorization(req, res, next) {
   return null;
 }
 
-export function authenicate(req, res, next) {
+export function adminAccess(req, res, next) {
   const role = req.decoded.role;
   if (role && role === 'admin') {
     return next();

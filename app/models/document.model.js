@@ -1,24 +1,18 @@
 import Sequelize from 'sequelize';
-import config from './../../config/config';
 import Role from './role.model';
 import User from './user.model';
 
-const sequelize = new Sequelize(config.database, config.dbUsename, config.dbPassword);
-sequelize.authenticate().complete((err) => {
-  if (err) {
-    console.log('Error connecting');
-  } else {
-    console.log('Connection has been established successfully');
-  }
+const dotenv = require('dotenv').config();
+
+const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
+  host: '127.0.0.1',
+  dialect: 'postgres',
+  port: 5432,
+  logging: false,
 });
 
 const Document = sequelize.define('Document', {
-  id: {
-    type: Sequelize.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  docTitle: {
+  title: {
     type: Sequelize.STRING,
     allowNull: false,
     unique: true,
@@ -35,11 +29,15 @@ const Document = sequelize.define('Document', {
     },
   },
   role: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.STRING,
     references: {
       model: Role,
       key: 'roleTitle',
     },
+  },
+  type: {
+    type: Sequelize.STRING,
+    allowNull: false,
   },
 });
 

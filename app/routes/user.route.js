@@ -1,5 +1,5 @@
 import userControl from '../controllers/user.controller';
-import { authenicate, authorization } from '../controllers/auth.controller';
+import { adminAccess, authorization } from '../controllers/auth.controller';
 
 const userRoute = (router) => {
   router
@@ -12,13 +12,17 @@ const userRoute = (router) => {
 
   router
     .route('/users')
-    .get(authorization, authenicate, userControl.getAll);
+    .get(authorization, adminAccess, userControl.getAll);
 
   router
     .route('/users/:id')
-    .get(authorization, authenicate, userControl.find)
+    .get(authorization, adminAccess, userControl.find)
     .put(authorization, userControl.update)
-    .delete(authorization, authenicate, userControl.delete);
+    .delete(authorization, adminAccess, userControl.delete);
+
+  router
+    .route('/users/:id/documents')
+    .get(authorization, userControl.documents);
 };
 
 export default userRoute;

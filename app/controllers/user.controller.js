@@ -1,4 +1,4 @@
-import { CREATE, LOGIN, GET_ALL, FIND, UPDATE, DELETE } from '../actions/user.action';
+import { CREATE, LOGIN, GET_ALL, FIND, UPDATE, DELETE, DOCUMENTS } from '../actions/user.action';
 
 const userControl = {
   signup: CREATE,
@@ -7,6 +7,7 @@ const userControl = {
   find: FIND,
   update: UPDATE,
   delete: DELETE,
+  documents: DOCUMENTS,
 };
 
 export default userControl;

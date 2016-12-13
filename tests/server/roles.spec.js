@@ -79,7 +79,6 @@ describe('Role', () => {
           .set('authorization', wrongToken)
           .expect(401)
           .end((err, res) => {
-              console.log(res.body, "wrong");
               res.status.should.equal(401);
               res.body.message.should.equal('Failed to authenicate token');
               done();

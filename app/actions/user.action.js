@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto-js';
 import User from '../models/user.model';
+import Document from '../models/document.model';
 
 function verifyPassword(hashedPassword) {
   return crypto.AES.decrypt(hashedPassword, process.env.SECRET).toString(crypto.enc.Utf8);
@@ -151,38 +152,32 @@ export function FIND(req, res) {
  */
 export function UPDATE(req, res) {
   const body = req.body;
-  if (req.params.id !== req.decoded.id && req.decoded.role !== 'admin') {
-    return res.status(401).json({
-      status: 401,
-      message: 'You can only access your account',
-    });
-  }
+  const filter = {};
+  filter.where = { id: req.params.id };
   User
-  .findOne({
-    where: {
-      id: req.params.id,
-    },
-  })
-  .then((user) => {
-    if (!user) {
-      return res.status(400).json({
-        status: 400,
-        message: 'User not found.',
-      });
-    }
-    user
-      .update(body, {
-        where: {
-          id: req.param.id,
-        },
-      })
-      .then(() => {
-        return res.status(200).json({
-          status: 200,
-          message: 'Successfully Updated',
+    .findOne(filter)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({
+          status: 404,
+          message: 'User not found.',
         });
-      });
-  });
+      }
+      if (user.id !== req.decoded.id) {
+        return res.status(401).json({
+          status: 401,
+          message: 'You can only access your account',
+        });
+      }
+      user
+        .update(body, filter)
+        .then(() => {
+          return res.status(200).json({
+            status: 200,
+            message: 'Successfully Updated',
+          });
+        });
+    });
 }
 
 /**
@@ -201,8 +196,8 @@ export function DELETE(req, res) {
   })
   .then((user) => {
     if (!user) {
-      return res.status(400).json({
-        status: 400,
+      return res.status(404).json({
+        status: 404,
         message: 'User not found.',
       });
     }
@@ -219,4 +214,42 @@ export function DELETE(req, res) {
         });
       });
   });
+}
+
+/**
+ * DOCUMENTS
+ * @summary This returns all documents for the user
+ * @param {object} req
+ * @param {object} res
+ * @return {object}
+ */
+export function DOCUMENTS(req, res) {
+  const filter = {};
+  filter.where = { id: req.params.id };
+  User
+    .findOne(filter)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({
+          status: 404,
+          message: 'User not found',
+        });
+      }
+      Document
+        .findAll({
+          where: { owner: user.username },
+        })
+        .then((documents) => {
+          if (user.username === req.decoded.username || req.decoded.role === 'admin') {
+            return res.status(200).json(documents);
+          }
+          const docs = documents.filter((doc) => {
+            const docArr = [];
+            if (req.decoded.role !== 'admin' && doc.type === 'public') {
+              return docArr.push(doc);
+            }
+          });
+          return res.status(200).json(docs);
+        });
+    });
 }
