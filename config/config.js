@@ -1,6 +1,6 @@
+import dotenv from 'dotenv';
 
-const dotenv = require('dotenv').config();
-
+dotenv.config();
 module.exports = {
   development: {
     username: process.env.DB_USER || 'postgres',
