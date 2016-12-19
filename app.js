@@ -1,12 +1,17 @@
 import bodyParser from 'body-parser';
 import express from 'express';
+import Logger from 'basic-logger';
 import morgan from 'morgan';
 import routes from './app/routes/';
 
+const customConfig = {
+  showMillis: true,
+  showTimestamp: true,
+};
 const app = express();
 const router = express.Router();
 const port = process.env.PORT || 3000;
-
+const log = new Logger(customConfig);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extend: true }));
 app.use(morgan('dev'));
@@ -25,7 +30,7 @@ app.use((req, res, next) => {
 });
 
 app.listen(port);
-console.log(`App Listening to ${port}`);
+log.info(`App Listening to ${port}`);
 
 
 export default app;

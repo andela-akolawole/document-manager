@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/andela-akolawole/document-manager.svg?branch=develop)](https://travis-ci.org/andela-akolawole/document-manager)
 [![Coverage Status](https://coveralls.io/repos/github/andela-akolawole/document-manager/badge.svg?branch=develop)](https://coveralls.io/github/andela-akolawole/document-manager?branch=develop)
-
+[![Code Climate](https://codeclimate.com/github/andela-akolawole/document-manager/badges/gpa.svg)](https://codeclimate.com/github/andela-akolawole/document-manager)
 # Document Managemet System
 Document Management System API contains several APIs that allows users to create, edit, retrieve and delete documents. It also offers a way to ensure that only authorized users can perform certain operations.
 

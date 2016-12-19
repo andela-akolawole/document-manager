@@ -1,5 +1,13 @@
 import jwt from 'jsonwebtoken';
 
+/**
+ * authorization
+ * @summary This checks if user has a token to access certain route
+ * @param {Object} req
+ * @param {Object} res
+ * @param {function} next
+ * @return {Object}
+ */
 export function authorization(req, res, next) {
   const token = req.headers.authorization;
   if (token) {
@@ -22,6 +30,15 @@ export function authorization(req, res, next) {
   return null;
 }
 
+/**
+ * adminAccess
+ * @summary This checks if the user accessing the route
+ * is an admin
+ * @param {Object} req
+ * @param {Object} res
+ * @param {function} next
+ * @return {Object}
+ */
 export function adminAccess(req, res, next) {
   const role = req.decoded.role;
   if (role && role === 'admin') {
