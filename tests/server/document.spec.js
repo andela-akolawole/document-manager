@@ -76,13 +76,11 @@ describe('Document', () => {
     });
 
     it('should return err if user is not admin or regular', (done) => {
-        console.log(wrongToken);
         server
            .get('/api/documents')
            .set('authorization', wrongToken)
            .expect(509)
            .end((err, res) => {
-               console.log(res.body);
                res.status.should.equal(509);
                res.body.message.should.equal('Server error');
                done();
@@ -150,7 +148,6 @@ describe('Document', () => {
           .set('authorization', userToken)
           .expect(200)
           .end((err, res) => {
-              console.log(res.body);
               res.status.should.equal(200);
               res.body.message.should.equal('Successfully updated');
               done();
