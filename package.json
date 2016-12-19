@@ -7,7 +7,7 @@
     "test": "PORT=3020 NODE_ENV=test npm run clean && npm run inits && NODE_ENV=test mocha --compilers js:babel-core/register tests/server && npm run coverage",
     "clean": "NODE_ENV=test node_modules/.bin/sequelize db:migrate:undo:all",
     "inits": "NODE_ENV=test node_modules/.bin/sequelize db:migrate && npm run seed",
-    "seed": "node_modules/.bin/sequelize db:seed:all",
+    "seed": "NODE_ENV=test node_modules/.bin/sequelize db:seed:all",
     "start": "PORT=3020 nodemon app.js --exec babel-node --presets es2015,stage-2",
     "coverage": "NODE_ENV=test npm run clean && npm run inits && rm -rf /coverage && node_modules/.bin/babel-node node_modules/.bin/babel-istanbul cover node_modules/.bin/_mocha --reporter tests/server",
     "coveralls": "cat ./coverage/*.info | ./node_modules/coveralls/bin/coveralls.js"

@@ -1,9 +1,9 @@
 import Sequelize from 'sequelize';
 import crypto from 'crypto-js';
 import Role from './role.model';
+import dotenv from 'dotenv';
 
-const dotenv = require('dotenv').config();
-
+dotenv.config();
 
 function hashedPassword(plainTextPassword) {
   return crypto.AES.encrypt(plainTextPassword, process.env.SECRET).toString();
