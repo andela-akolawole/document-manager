@@ -21,6 +21,6 @@ module.exports = {
   },
 
   down(queryInterface) {
-    return queryInterface.dropTable('Roles');
+    return queryInterface.dropAllTables();
   },
 };
