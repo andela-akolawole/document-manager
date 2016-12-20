@@ -17,9 +17,24 @@ module.exports = {
       owner: {
         type: Sequelize.STRING,
         allowNull: false,
+        references: {
+          model: 'Users',
+          key: 'username',
+          deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED,
+        },
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
       },
       role: {
         type: Sequelize.STRING,
+        references: {
+          model: 'Roles',
+          key: 'roleTitle',
+          deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED,
+          
+        },
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
       },
       type: {
         type: Sequelize.STRING,

@@ -1,6 +1,6 @@
 const userSeed = [
   {
-    "username": "amcdonald",
+    "username": "kolafas15",
     "password": "password1",
     "email": "user1@example.com",
     "role": "admin",
@@ -8,7 +8,7 @@ const userSeed = [
     "lastName": "McDonald"
   },
   {
-    "username": "pescobar",
+    "username": "kolafas2",
     "password": "password2",
     "email": "user2@example.com",
     "role": "regular",
@@ -31,12 +31,12 @@ const userSeed = [
   },
   {
     // login data
-    "username": "amcdonald",
+    "username": "kolafas15",
     "password": "password1",
   },
   {
     // wrong password
-    "username": "amcdonald",
+    "username": "kolafas15",
     "password": "password5",
   },
   {

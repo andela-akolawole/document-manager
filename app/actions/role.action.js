@@ -15,17 +15,25 @@ export function CREATE(req, res) {
     });
   }
   Role
-    .create(body)
-    .then(() => {
-      return res.status(200).json({
-        status: 200,
-        message: 'Successfully created',
-      });
+    .find({
+      where: {
+        roleTitle: body.roleTitle,
+      },
     })
-    .catch(() => {
-      return res.status(503).json({
-        status: 503,
-        message: 'Something went wrong.',
+    .then((role) => {
+      if (role) {
+        return res.status(409).json({
+          status: 409,
+          message: 'This role already exists',
+        });
+      }
+      Role
+      .create(body)
+      .then(() => {
+        return res.status(200).json({
+          status: 200,
+          message: 'Successfully created',
+        });
       });
     });
 }

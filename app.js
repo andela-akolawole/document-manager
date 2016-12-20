@@ -1,8 +1,11 @@
 import bodyParser from 'body-parser';
 import express from 'express';
+import dotenv from 'dotenv';
 import Logger from 'basic-logger';
 import morgan from 'morgan';
 import routes from './app/routes/';
+
+dotenv.config();
 
 const customConfig = {
   showMillis: true,
@@ -11,6 +14,7 @@ const customConfig = {
 const app = express();
 const router = express.Router();
 const port = process.env.PORT || 3000;
+
 const log = new Logger(customConfig);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extend: true }));

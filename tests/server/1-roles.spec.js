@@ -42,10 +42,10 @@ describe('Role', () => {
           .post('/api/roles/create')
           .send(roleSeed[0])
           .set('authorization', adminToken)
-          .expect(503)
+          .expect(409)
           .end((err, res) => {
-              res.status.should.equal(503);
-              res.body.message.should.equal('Something went wrong.');
+              res.status.should.equal(409);
+              res.body.message.should.equal('This role already exists');
               done();
           });
     })

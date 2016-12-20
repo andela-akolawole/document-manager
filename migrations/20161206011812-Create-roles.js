@@ -13,6 +13,7 @@ module.exports = {
       },
       createdAt: {
         type: Sequelize.DATE,
+        defualtValue: new Date(),
       },
       updatedAt: {
         type: Sequelize.DATE,

@@ -10,6 +10,11 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
 });
 
 const Role = sequelize.define('Role', {
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
   roleTitle: {
     type: Sequelize.STRING,
     allowNull: false,

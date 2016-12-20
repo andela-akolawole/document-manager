@@ -8,7 +8,7 @@ const server = supertest(app);
 const secret = process.env.SECRET;
 const adminToken = jwt.sign({ username: userSeed[0].username, role: userSeed[0].role, id: 1 }, secret);
 const userToken = jwt.sign({ username: userSeed[1].username, role: userSeed[1].role, id: 2 }, secret);
-const diffToken = jwt.sign({ username: userSeed[4].username, role: userSeed[1].role, id: 3 }, secret);
+const diffToken = jwt.sign({ username: userSeed[7].username, role: userSeed[7].role, id: 4 }, secret);
 
 before((done) => {
     server
@@ -41,18 +41,6 @@ describe('User', () => {
         .end((err, res) => {
             res.status.should.equal(201);
             res.body.message.should.equal('Successfully registered');
-            done();
-        });
-  });
-
-  it('should validate that a new user has a role defined', (done) => {
-      server
-        .post('/api/users')
-        .send(userSeed[2])
-        .expect(400)
-        .end((err, res) => {
-            res.status.should.equal(400);
-            res.body.message.should.equal('Fill in the required fields');
             done();
         });
   });
@@ -97,9 +85,9 @@ describe('User', () => {
       server
         .post('/api/users/login')
         .send(userSeed[6])
-        .expect(403)
+        .expect(401)
         .end((err, res) => {
-            res.status.should.equal(403);
+            res.status.should.equal(401);
             res.body.message.should.equal('Authenication failed. Username or password is incorrect');
             done();
         })
@@ -164,18 +152,6 @@ describe('User', () => {
         })
   });
 
-  it('should return err if user not found', (done) => {
-      server
-        .put('/api/users/3')
-        .set('authorization', adminToken)
-        .expect(404)
-        .end((err, res) => {
-            res.status.should.equal(404);
-            res.body.message.should.equal('User not found.');
-            done();
-        })
-  });
-
   it('should return success if user attributes is updated', (done) => {
       server
         .put('/api/users/2')
@@ -190,7 +166,7 @@ describe('User', () => {
 
   it('should return err if user not found', (done) => {
       server
-        .delete('/api/users/5')
+        .delete('/api/users/10')
         .set('authorization', adminToken)
         .expect(404)
         .end((err, res) => {
@@ -240,7 +216,7 @@ describe('User', () => {
       server
         .get('/api/users/2/documents')
         .set('authorization', adminToken)
-        .expect(404)
+        .expect(200)
         .end((err, res) => {
             res.status.should.equal(200);
             res.body.length.should.be.above(1);
@@ -252,11 +228,22 @@ describe('User', () => {
       server
         .get('/api/users/2/documents')
         .set('authorization', diffToken)
-        .expect(404)
+        .expect(200)
         .end((err, res) => {
             res.status.should.equal(200);
             res.body.length.should.be.above(0);
             done();
         });
   })
+});
+
+it('should return user not found when doing an update', (done) => {
+    server
+      .put('/api/users/200')
+      .set('authorization', userToken)
+      .end((err, res) => {
+          res.status.should.equal(404);
+          res.body.message.should.equal('User not found.');
+          done();
+      });
 })

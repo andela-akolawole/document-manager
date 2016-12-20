@@ -58,7 +58,7 @@ describe('Document', () => {
           .expect(200)
           .end((err, res) => {
               res.status.should.equal(200);
-              res.body.length.should.be.above(3);
+              res.body.length.should.be.equal(3);
               done();
           });
     });

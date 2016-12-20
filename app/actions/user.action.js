@@ -16,7 +16,7 @@ function verifyPassword(hashedPassword) {
  */
 export function CREATE(req, res) {
   const body = req.body;
-  if (body.firstName && body.role && body.lastName && body.username && body.email && body.password) {
+  if (body.firstName && body.lastName && body.username && body.email && body.password) {
     User
       .findOne({
         where: {
@@ -92,8 +92,8 @@ export function LOGIN(req, res) {
            token,
          });
        }
-       return res.status(403).json({
-         status: 403,
+       return res.status(401).json({
+         status: 401,
          message: 'Authenication failed. Username or password is incorrect',
        });
      });
@@ -225,6 +225,7 @@ export function DELETE(req, res) {
  */
 export function DOCUMENTS(req, res) {
   const filter = {};
+
   filter.where = { id: req.params.id };
   User
     .findOne(filter)

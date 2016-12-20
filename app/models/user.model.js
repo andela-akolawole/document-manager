@@ -56,6 +56,7 @@ const User = sequelize.define('User', {
       key: 'title',
       deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED,
     },
+    defaultValue: 'regular',
   },
 });
 

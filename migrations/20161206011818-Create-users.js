@@ -1,4 +1,3 @@
-
 module.exports = {
   up(queryInterface, Sequelize) {
     return queryInterface.createTable('Users', {
@@ -39,6 +38,14 @@ module.exports = {
       role: {
         type: Sequelize.STRING,
         allowNull: false,
+        references: {
+          model: 'Roles',
+          key: 'roleTitle',
+          deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED,
+        },
+        defaultValue: 'regular',
+        onDelete: 'cascade',
+        onUpdate: 'cascade',
       },
       createdAt: {
         type: Sequelize.DATE,
