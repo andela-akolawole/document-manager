@@ -97,6 +97,12 @@ export function GETBYID(req, res) {
   Document
     .findById(req.params.id)
     .then((document) => {
+      if (document.dataValues.type === 'private') {
+        return res.status(404).json({
+          status: 404,
+          message: 'Document not found',
+        });
+      }
       return res.status(200).json([document]);
     });
 }
@@ -121,8 +127,8 @@ export function UPDATE(req, res) {
         });
       }
       if (document.owner !== req.decoded.username) {
-        return res.status(401).json({
-          status: 401,
+        return res.status(403).json({
+          status: 403,
           message: 'You can only edit your own document',
         });
       }

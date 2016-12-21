@@ -3,6 +3,8 @@ import should from 'should';
 import jwt from 'jsonwebtoken';
 import userSeed from '../user.seed';
 import app from '../../app';
+import User from '../../app/models/user.model';
+import Document from '../../app/models/document.model';
 
 const server = supertest(app);
 const secret = process.env.SECRET;
@@ -14,7 +16,6 @@ before((done) => {
     server
       .post('/api/users')
       .send(userSeed[0])
-      .expect(400)
       .end((err, res) => {
           done();
       });
@@ -25,7 +26,6 @@ describe('User', () => {
       server
         .post('/api/users')
         .send(userSeed[0])
-        .expect(409)
         .end((err, res) => {
             res.status.should.equal(409);
             res.body.message.should.equal('This user already exists.');
@@ -37,7 +37,6 @@ describe('User', () => {
       server
         .post('/api/users')
         .send(userSeed[7])
-        .expect(201)
         .end((err, res) => {
             res.status.should.equal(201);
             res.body.message.should.equal('Successfully registered');
@@ -49,7 +48,6 @@ describe('User', () => {
       server
         .post('/api/users')
         .send(userSeed[3])
-        .expect(400)
         .end((err, res) => {
             res.status.should.equal(400);
             res.body.message.should.equal('Fill in the required fields');
@@ -61,7 +59,6 @@ describe('User', () => {
       server
         .post('/api/users/login')
         .send(userSeed[4])
-        .expect(200)
         .end((err, res) => {
             res.status.should.equal(200);
             res.body.message.should.equal('Successfully logged In');
@@ -73,10 +70,9 @@ describe('User', () => {
       server
         .post('/api/users/login')
         .send(userSeed[5])
-        .expect(403)
         .end((err, res) => {
             res.status.should.equal(403);
-            res.body.message.should.equal('Authenication failed. Username or password! is incorrect');
+            res.body.message.should.equal('Authenication failed. Username or password is incorrect');
             done();
         })
   });
@@ -85,9 +81,8 @@ describe('User', () => {
       server
         .post('/api/users/login')
         .send(userSeed[6])
-        .expect(401)
         .end((err, res) => {
-            res.status.should.equal(401);
+            res.status.should.equal(403);
             res.body.message.should.equal('Authenication failed. Username or password is incorrect');
             done();
         })
@@ -96,7 +91,6 @@ describe('User', () => {
   it('should return error if login details is not sent', (done) => {
       server
         .post('/api/users/login')
-        .expect(400)
         .end((err, res) => {
             res.status.should.equal(400);
             res.body.message.should.equal('Fill in the required fields');
@@ -108,7 +102,6 @@ describe('User', () => {
       server
         .get('/api/users')
         .set('authorization', adminToken)
-        .expect(200)
         .end((err, res) => {
             res.status.should.equal(200);
             res.body.length.should.be.above(0);
@@ -121,7 +114,6 @@ describe('User', () => {
       server
         .get('/api/users/'+ userId)
         .set('authorization', adminToken)
-        .expect(404)
         .end((err, res) => {
             res.status.should.equal(404);
             res.body.message.should.equal('User not found.');
@@ -133,31 +125,39 @@ describe('User', () => {
       server
         .get('/api/users/2')
         .set('authorization', adminToken)
-        .expect(200)
         .end((err, res) => {
             res.status.should.equal(200);
+            res.body.should.have.key('password');
             done();
         })
   });
 
+  it('should return user details if regular token is sent', (done) => {
+      server
+        .get('/api/users/2')
+        .set('authorization', userToken)
+        .end((err, res) => {
+            res.status.should.equal(200);
+            res.body.should.not.have.key('password');
+            done();
+        });
+  })
   it('should return err if not user', (done) => {
       server
         .put('/api/users/2')
         .set('authorization', adminToken)
-        .expect(401)
         .end((err, res) => {
-            res.status.should.equal(401);
+            res.status.should.equal(403);
             res.body.message.should.equal('You can only access your account');
             done();
         })
   });
 
-  it('should return success if user attributes is updated', (done) => {
+  it('should return success if user\'s attributes is updated', (done) => {
       server
         .put('/api/users/2')
         .set('authorization', userToken)
         .send({ "firstName": 'John'})
-        .expect(200)
         .end((err, res) => {
             res.body.message.should.equal('Successfully Updated');
             done();
@@ -168,7 +168,6 @@ describe('User', () => {
       server
         .delete('/api/users/10')
         .set('authorization', adminToken)
-        .expect(404)
         .end((err, res) => {
             res.status.should.equal(404);
             res.body.message.should.equal('User not found.');
@@ -180,7 +179,6 @@ describe('User', () => {
       server
         .delete('/api/users/1')
         .set('authorization', adminToken)
-        .expect(200)
         .end((err, res) => {
             res.status.should.equal(200);
             res.body.message.should.equal('Successfully Deleted.');
@@ -192,10 +190,17 @@ describe('User', () => {
       server
         .get('/api/users/2/documents')
         .set('authorization', userToken)
-        .expect(200)
         .end((err, res) => {
             res.status.should.equal(200);
-            res.body.length.should.be.above(1);
+            User
+              .find({ where: { id: 2 } })
+              .then((result) => {
+                  Document
+                    .findAll({ where: { owner: result.username } })
+                    .then((doc) => {
+                        doc.length.should.equal(res.body.length);
+                    });
+              });
             done();
         });
   });
@@ -204,7 +209,6 @@ describe('User', () => {
       server
         .get('/api/users/10/documents')
         .set('authorization', userToken)
-        .expect(404)
         .end((err, res) => {
             res.status.should.equal(404);
             res.body.message.should.equal('User not found');
@@ -216,10 +220,17 @@ describe('User', () => {
       server
         .get('/api/users/2/documents')
         .set('authorization', adminToken)
-        .expect(200)
         .end((err, res) => {
             res.status.should.equal(200);
-            res.body.length.should.be.above(1);
+             User
+              .find({ where: { id: 2 } })
+              .then((result) => {
+                  Document
+                    .findAll({ where: { owner: result.username } })
+                    .then((doc) => {
+                        doc.length.should.equal(res.body.length);
+                    });
+              });
             done();
         });
   });
@@ -228,10 +239,17 @@ describe('User', () => {
       server
         .get('/api/users/2/documents')
         .set('authorization', diffToken)
-        .expect(200)
         .end((err, res) => {
             res.status.should.equal(200);
-            res.body.length.should.be.above(0);
+             User
+              .find({ where: { id: 2 } })
+              .then((result) => {
+                  Document
+                    .findAll({ where: { owner: result.username } })
+                    .then((doc) => {
+                        doc.length.should.equal(res.body.length);
+                    });
+              });
             done();
         });
   })

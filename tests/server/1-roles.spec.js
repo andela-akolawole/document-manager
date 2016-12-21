@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import userSeed from '../user.seed';
 import roleSeed from '../role.seed';
 import app from '../../app';
+import Role from '../../app/models/role.model';
 
 const server = supertest(app);
 const secret = process.env.SECRET;
@@ -17,7 +18,6 @@ describe('Role', () => {
           .post('/api/roles/create')
           .send(roleSeed[0])
           .set('authorization', adminToken)
-          .expect(200)
           .end((err, res) => {
              res.status.should.equal(200);
              res.body.message.should.equal('Successfully created');
@@ -29,7 +29,6 @@ describe('Role', () => {
         server
           .post('/api/roles/create')
           .set('authorization', adminToken)
-          .expect(400)
           .end((err, res) => {
              res.status.should.equal(400);
              res.body.message.should.equal('Add a role.');
@@ -42,7 +41,6 @@ describe('Role', () => {
           .post('/api/roles/create')
           .send(roleSeed[0])
           .set('authorization', adminToken)
-          .expect(409)
           .end((err, res) => {
               res.status.should.equal(409);
               res.body.message.should.equal('This role already exists');
@@ -54,10 +52,14 @@ describe('Role', () => {
         server
           .get('/api/roles')
           .set('authorization', adminToken)
-          .expect(200)
           .end((err, res) => {
               res.status.should.equal(200);
-              done();
+              Role
+                .findAndCountAll()
+                .then((result) => {
+                    result.counts.should.equal(res.body);
+                });
+            done();
           });
     });
 
@@ -65,7 +67,6 @@ describe('Role', () => {
         server
           .post('/api/roles')
           .set('authorization', adminToken)
-          .expect(404)
           .end((err, res) => {
               res.status.should.equal(404);
               res.body.message.should.equal('Not found!!!!!!');
@@ -77,7 +78,6 @@ describe('Role', () => {
         server
           .get('/api/roles')
           .set('authorization', wrongToken)
-          .expect(401)
           .end((err, res) => {
               res.status.should.equal(401);
               res.body.message.should.equal('Failed to authenicate token');
@@ -88,7 +88,6 @@ describe('Role', () => {
     it('should return err if token is not passed', (done) => {
         server
           .get('/api/roles')
-          .expect(401)
           .end((err, res) => {
               res.status.should.equal(401);
               res.body.message.should.equal('You do not have an access token');
@@ -100,9 +99,8 @@ describe('Role', () => {
         server
           .get('/api/roles')
           .set('authorization', userToken)
-          .expect(401)
           .end((err, res) => {
-              res.status.should.equal(401);
+              res.status.should.equal(403);
               res.body.message.should.equal('You are not authorized to view this content');
               done();
           });   

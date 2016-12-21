@@ -44,8 +44,8 @@ export function adminAccess(req, res, next) {
   if (role && role === 'admin') {
     return next();
   }
-  return res.status(401).json({
-    status: 401,
+  return res.status(403).json({
+    status: 403,
     message: 'You are not authorized to view this content',
   });
 }

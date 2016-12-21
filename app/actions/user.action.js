@@ -78,7 +78,7 @@ export function LOGIN(req, res) {
          if (body.password !== verifyPassword(user.password)) {
            return res.status(403).json({
              status: 403,
-             message: 'Authenication failed. Username or password! is incorrect',
+             message: 'Authenication failed. Username or password is incorrect',
            });
          }
          const token = jwt.sign({
@@ -92,8 +92,8 @@ export function LOGIN(req, res) {
            token,
          });
        }
-       return res.status(401).json({
-         status: 401,
+       return res.status(403).json({
+         status: 403,
          message: 'Authenication failed. Username or password is incorrect',
        });
      });
@@ -120,7 +120,7 @@ export function GET_ALL(req, res) {
 
 /**
  * FIND
- * @summary This returns all user
+ * @summary This returns a user
  * @param {object} req
  * @param {object} res
  * @return {object}
@@ -139,7 +139,19 @@ export function FIND(req, res) {
           message: 'User not found.',
         });
       }
-      return res.status(200).json(user);
+      if (req.decoded.role === 'admin') {
+        return res.status(200).json(user);
+      }
+      return res.status(200).json({
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        username: user.username,
+        role: user.role,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      });
     });
 }
 
@@ -164,8 +176,8 @@ export function UPDATE(req, res) {
         });
       }
       if (user.id !== req.decoded.id) {
-        return res.status(401).json({
-          status: 401,
+        return res.status(403).json({
+          status: 403,
           message: 'You can only access your account',
         });
       }

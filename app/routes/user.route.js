@@ -16,7 +16,7 @@ const userRoute = (router) => {
 
   router
     .route('/users/:id')
-    .get(authorization, adminAccess, userControl.find)
+    .get(authorization, userControl.find)
     .put(authorization, userControl.update)
     .delete(authorization, adminAccess, userControl.delete);
 

@@ -1,6 +1,7 @@
 import supertest from 'supertest';
 import should from 'should';
 import jwt from 'jsonwebtoken';
+import Document from '../../app/models/document.model';
 import userSeed from '../user.seed';
 import documentSeed from '../document.seed';
 import app from '../../app';
@@ -17,7 +18,6 @@ describe('Document', () => {
           .post('/api/documents')
           .send(documentSeed[0])
           .set('authorization', userToken)
-          .expect(201)
           .end((err, res) => {
               res.status.should.equal(201);
               res.body.message.should.equal('Document created');
@@ -25,12 +25,11 @@ describe('Document', () => {
           });
     });
 
-    it('should return error if all field are not set',  (done) => {
+    it('should return error if all fields are not set',  (done) => {
         server
           .post('/api/documents')
           .send(documentSeed[2])
           .set('authorization', userToken)
-          .expect(400)
           .end((err, res) => {
               res.status.should.equal(400);
               res.body.message.should.equal('Fill the required fields');
@@ -43,7 +42,6 @@ describe('Document', () => {
           .post('/api/documents')
           .send(documentSeed[0])
           .set('authorization', userToken)
-          .expect(409)
           .end((err, res) => {
               res.status.should.equal(409);
               res.body.message.should.equal('The document already exists.');
@@ -55,7 +53,6 @@ describe('Document', () => {
         server
           .get('/api/documents')
           .set('authorization', adminToken)
-          .expect(200)
           .end((err, res) => {
               res.status.should.equal(200);
               res.body.length.should.be.equal(3);
@@ -67,7 +64,6 @@ describe('Document', () => {
         server
           .get('/api/documents?limit=2')
           .set('authorization', adminToken)
-          .expect(200)
           .end((err, res) => {
               res.status.should.equal(200);
               res.body.length.should.equal(2);
@@ -75,11 +71,10 @@ describe('Document', () => {
           });
     });
 
-    it('should return err if user is not admin or regular', (done) => {
+    it('should return err if something goes wrong with the server', (done) => {
         server
            .get('/api/documents')
            .set('authorization', wrongToken)
-           .expect(509)
            .end((err, res) => {
                res.status.should.equal(509);
                res.body.message.should.equal('Server error');
@@ -91,9 +86,9 @@ describe('Document', () => {
         server
           .get('/api/documents?page=1')
           .set('authorization', userToken)
-          .expect(200)
           .end((err, res) => {
               res.status.should.equal(200);
+              res.body.should.containDeep([{type: 'public'}], [{owner: userSeed[1].username },{type: 'private'}]);
               res.body.length.should.be.above(2);
               done();
           });
@@ -103,9 +98,9 @@ describe('Document', () => {
         server
           .get('/api/documents?role=regular')
           .set('authorization', adminToken)
-          .expect(200)
           .end((err, res) => {
               res.status.should.equal(200);
+              res.body[1].should.have.value('role', 'regular');
               done();
           });
     });
@@ -114,13 +109,11 @@ describe('Document', () => {
         server
           .get('/api/documents')
           .set('authorization', adminToken)
-          .expect(200)
           .end((err, res) => {
               const date = res.body[0].createdAt;
               server
                 .get('/api/documents?date='+ date)
                 .set('authorization', adminToken)
-                .expect(200)
                 .end((err, res) => {
                     res.status.should.equal(200);
                     res.body.length.should.be.equal(1);
@@ -131,9 +124,8 @@ describe('Document', () => {
 
     it('should return a document if queried by its ID', (done) => {
       server
-        .get('/api/documents/1')
+        .get('/api/documents/5')
         .set('authorization', adminToken)
-        .expect(200)
         .end((err, res) => {
             res.status.should.equal(200)
             res.body.length.should.equal(1);
@@ -141,12 +133,22 @@ describe('Document', () => {
         });
     });
 
+    it('should return a 404 error if document is private', (done) => {
+        server
+        .get('/api/documents/4')
+        .set('authorization', adminToken)
+        .end((err, res) => {
+            res.status.should.equal(404)
+            res.body.message.should.equal('Document not found');
+            done();
+        });
+    })
+
     it('should return success if document is updated', (done) => {
         server
           .put('/api/documents/3')
           .send({ title: 'Choose one' })
           .set('authorization', userToken)
-          .expect(200)
           .end((err, res) => {
               res.status.should.equal(200);
               res.body.message.should.equal('Successfully updated');
@@ -159,7 +161,6 @@ describe('Document', () => {
           .put('/api/documents/10')
           .send({ title: 'Wrong ways'})
           .set('authorization', userToken)
-          .expect(400)
           .end((err, res) => {
               res.status.should.equal(400);
               res.body.message.should.equal('Document not found');
@@ -172,9 +173,8 @@ describe('Document', () => {
           .put('/api/documents/3')
           .send({ title: 'Message us' })
           .set('authorization', adminToken)
-          .expect(401)
           .end((err, res) => {
-              res.status.should.equal(401);
+              res.status.should.equal(403);
               res.body.message.should.equal('You can only edit your own document');
               done();
           });
@@ -184,7 +184,6 @@ describe('Document', () => {
         server
           .delete('/api/documents/3')
           .set('authorization', adminToken)
-          .expect(200)
           .end((err, res) => {
               res.status.should.equal(200);
               res.body.message.should.equal('Successfully deleted');
@@ -196,7 +195,6 @@ describe('Document', () => {
         server
           .delete('/api/documents/10')
           .set('authorization', adminToken)
-          .expect(404)
           .end((err, res) => {
               res.status.should.equal(404);
               res.body.message.should.equal('Document not found');
