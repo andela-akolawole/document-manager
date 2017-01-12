@@ -15,7 +15,7 @@ const wrongToken = 'wrong';
 describe('Role', () => {
     it('should create a new role', (done) => {
         server
-          .post('/api/roles/create')
+          .post('/api/roles')
           .send(roleSeed[0])
           .set('authorization', adminToken)
           .end((err, res) => {
@@ -27,7 +27,7 @@ describe('Role', () => {
 
     it('should return err if role title is not set', (done) => {
         server
-          .post('/api/roles/create')
+          .post('/api/roles')
           .set('authorization', adminToken)
           .end((err, res) => {
              res.status.should.equal(400);
@@ -38,7 +38,7 @@ describe('Role', () => {
 
     it('should return err if role is created twice', (done) => {
         server
-          .post('/api/roles/create')
+          .post('/api/roles')
           .send(roleSeed[0])
           .set('authorization', adminToken)
           .end((err, res) => {
@@ -65,7 +65,7 @@ describe('Role', () => {
 
     it('should return err if wrong route is sent', (done) => {
         server
-          .post('/api/roles')
+          .post('/api/roles/create')
           .set('authorization', adminToken)
           .end((err, res) => {
               res.status.should.equal(404);
