@@ -71,7 +71,7 @@ describe('User', () => {
         .post('/api/users/login')
         .send(userSeed[5])
         .end((err, res) => {
-            res.status.should.equal(403);
+            res.status.should.equal(400);
             res.body.message.should.equal('Authenication failed. Username or password is incorrect');
             done();
         })
@@ -82,7 +82,7 @@ describe('User', () => {
         .post('/api/users/login')
         .send(userSeed[6])
         .end((err, res) => {
-            res.status.should.equal(403);
+            res.status.should.equal(400);
             res.body.message.should.equal('Authenication failed. Username or password is incorrect');
             done();
         })
@@ -105,6 +105,17 @@ describe('User', () => {
         .end((err, res) => {
             res.status.should.equal(200);
             res.body.length.should.be.above(0);
+            done();
+        });
+  });
+
+  it('should return an error if non-admin users try to request all users', (done) => {
+      server
+        .get('/api/users')
+        .set('authorization', userToken)
+        .end((err, res) => {
+            res.status.should.equal(403);
+            res.body.message.should.equal('You are not authorized to view this content');
             done();
         });
   });
@@ -216,7 +227,7 @@ describe('User', () => {
         });
   });
 
-  it('should return all documents for the user if admin', (done) => {
+  it('should return all documents(private, public) for the user if admin', (done) => {
       server
         .get('/api/users/2/documents')
         .set('authorization', adminToken)
@@ -235,7 +246,7 @@ describe('User', () => {
         });
   });
 
-  it('should return all documents if regular user queries for documents', (done) => {
+  it('should return all documents(public, private documents created by same user) if regular user queries for documents', (done) => {
       server
         .get('/api/users/2/documents')
         .set('authorization', diffToken)
