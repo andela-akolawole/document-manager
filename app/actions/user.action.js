@@ -76,8 +76,8 @@ export function LOGIN(req, res) {
      .then((user) => {
        if (user) {
          if (body.password !== verifyPassword(user.password)) {
-           return res.status(403).json({
-             status: 403,
+           return res.status(400).json({
+             status: 400,
              message: 'Authenication failed. Username or password is incorrect',
            });
          }
@@ -92,8 +92,8 @@ export function LOGIN(req, res) {
            token,
          });
        }
-       return res.status(403).json({
-         status: 403,
+       return res.status(400).json({
+         status: 400,
          message: 'Authenication failed. Username or password is incorrect',
        });
      });
