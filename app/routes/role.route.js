@@ -3,11 +3,8 @@ import { adminAccess, authorization } from '../controllers/auth.controller';
 
 const roleRoute = (router) => {
   router
-    .route('/roles/create')
-    .post(authorization, adminAccess, roleControl.create);
-
-  router
     .route('/roles')
+    .post(authorization, adminAccess, roleControl.create)
     .get(authorization, adminAccess, roleControl.getAll);
 };
 
