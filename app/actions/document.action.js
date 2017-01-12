@@ -60,7 +60,7 @@ export function GETALL(req, res) {
   Document
     .findAll(filter)
     .then((documents) => {
-      if (req.decoded.role === 'regular' || req.query.role && req.query.role !== 'admin') { 
+      if (req.decoded.role === 'regular' || req.query.role && req.query.role !== 'admin') {
         const docs = documents.filter((document) => {
           const docArr = [];
           if (document.owner === req.decoded.username && document.type === 'public') {
@@ -79,9 +79,9 @@ export function GETALL(req, res) {
       if (req.decoded.role === 'admin') {
         return res.status(200).json(documents);
       }
-      return res.status(509).json({
-        status: 509,
-        message: 'Server error',
+      return res.status(400).json({
+        status: 400,
+        message: 'Authentication failed: You are not a valid user',
       });
     });
 }
@@ -121,8 +121,8 @@ export function UPDATE(req, res) {
     .findOne(filter)
     .then((document) => {
       if (!document) {
-        return res.status(400).json({
-          status: 400,
+        return res.status(404).json({
+          status: 404,
           message: 'Document not found',
         });
       }
