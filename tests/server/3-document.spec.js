@@ -71,13 +71,13 @@ describe('Document', () => {
           });
     });
 
-    it('should return err if something goes wrong with the server', (done) => {
+    it('should return err if something goes wrongtoken is used for accessing all documents', (done) => {
         server
            .get('/api/documents')
            .set('authorization', wrongToken)
            .end((err, res) => {
-               res.status.should.equal(509);
-               res.body.message.should.equal('Server error');
+               res.status.should.equal(400);
+               res.body.message.should.equal('Authentication failed: You are not a valid user');
                done();
            });
     })
@@ -100,7 +100,13 @@ describe('Document', () => {
           .set('authorization', adminToken)
           .end((err, res) => {
               res.status.should.equal(200);
-              res.body[1].should.have.value('role', 'regular');
+              for(let i=0; i<res.body.length; i++) {
+                  if (res.body[i].role === 'admin') {
+                    res.body[i].should.have.value('role', 'admin',);
+                  } else {
+                    res.body[i].should.have.value('role', 'regular',);
+                  }
+              }
               done();
           });
     });
@@ -116,6 +122,7 @@ describe('Document', () => {
                 .set('authorization', adminToken)
                 .end((err, res) => {
                     res.status.should.equal(200);
+                    res.body[0].createdAt.should.equal(date);
                     res.body.length.should.be.equal(1);
                     done();
                 });
@@ -128,6 +135,7 @@ describe('Document', () => {
         .set('authorization', adminToken)
         .end((err, res) => {
             res.status.should.equal(200)
+            res.body[0].id.should.equal(5);
             res.body.length.should.equal(1);
             done();
         });
@@ -162,7 +170,7 @@ describe('Document', () => {
           .send({ title: 'Wrong ways'})
           .set('authorization', userToken)
           .end((err, res) => {
-              res.status.should.equal(400);
+              res.status.should.equal(404);
               res.body.message.should.equal('Document not found');
               done();
           });
