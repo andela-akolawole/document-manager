@@ -200,7 +200,7 @@ describe('Document', () => {
           .end((err, res) => {
               console.log(res.body);
               res.status.should.equal(200);
-              for(let i=0; i<res.body.length; i++) {
+              for(let i = 0; i < res.body.length; i++) {
                 res.body[i].should.have.value('role', 'regular');
               }
               done();
