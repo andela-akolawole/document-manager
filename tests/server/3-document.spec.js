@@ -71,7 +71,7 @@ describe('Document', () => {
           });
     });
 
-    it('should return err if something goes wrongtoken is used for accessing all documents', (done) => {
+    it('should return err if wrongtoken is used for accessing all documents', (done) => {
         server
            .get('/api/documents')
            .set('authorization', wrongToken)
