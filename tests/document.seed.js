@@ -1,7 +1,7 @@
 const docSeed = [
     {
         title: 'A tale of spirits',
-        role: 'admin',
+        role: 'regular',
         content: 'A very interesting insight into the daily workings of two inner cities',
         owner: 'kolafas15',
         type: 'public',

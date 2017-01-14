@@ -94,23 +94,6 @@ describe('Document', () => {
           });
     });
 
-    it('should return result if role query is used', (done) => {
-        server
-          .get('/api/documents?role=regular')
-          .set('authorization', adminToken)
-          .end((err, res) => {
-              res.status.should.equal(200);
-              for(let i=0; i<res.body.length; i++) {
-                  if (res.body[i].role === 'admin') {
-                    res.body[i].should.have.value('role', 'admin',);
-                  } else {
-                    res.body[i].should.have.value('role', 'regular',);
-                  }
-              }
-              done();
-          });
-    });
-
     it('should return based on date created', (done) => {
         server
           .get('/api/documents')
@@ -190,7 +173,7 @@ describe('Document', () => {
 
     it('should return success if document is deleted', (done) => {
         server
-          .delete('/api/documents/3')
+          .delete('/api/documents/4')
           .set('authorization', adminToken)
           .end((err, res) => {
               res.status.should.equal(200);
@@ -208,5 +191,19 @@ describe('Document', () => {
               res.body.message.should.equal('Document not found');
               done();
           });
-    })
+    });
+    
+    it('should return all regular documents if role=regular query is used', (done) => {
+        server
+          .get('/api/documents?role=regular')
+          .set('authorization', userToken)
+          .end((err, res) => {
+              console.log(res.body);
+              res.status.should.equal(200);
+              for(let i=0; i<res.body.length; i++) {
+                res.body[i].should.have.value('role', 'regular');
+              }
+              done();
+          });
+    });
 })
