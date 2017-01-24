@@ -198,7 +198,6 @@ describe('Document', () => {
           .get('/api/documents?role=regular')
           .set('authorization', userToken)
           .end((err, res) => {
-              console.log(res.body);
               res.status.should.equal(200);
               for(let i = 0; i < res.body.length; i++) {
                 res.body[i].should.have.value('role', 'regular');
