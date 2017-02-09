@@ -199,9 +199,10 @@ describe('Document', () => {
           .set('authorization', userToken)
           .end((err, res) => {
               res.status.should.equal(200);
-              for(let i = 0; i < res.body.length; i++) {
-                res.body[i].should.have.value('role', 'regular');
-              }
+              let i = 0;
+              res.body.map(value => {
+                  value.should.have.value('role', 'regular');
+              })
               done();
           });
     });
